@@ -1,0 +1,4 @@
+John was a truly a team player.  He came to all 5 of our meetings and really stepped up his game for this activity.
+John worked on all the parts, he was espcially handy when it came to using the glm library.  He also created all the variables in the collsion detection.
+
+10 out of 10 would collision detect with again.

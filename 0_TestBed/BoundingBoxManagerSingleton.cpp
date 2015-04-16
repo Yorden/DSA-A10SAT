@@ -125,30 +125,33 @@ void BoundingBoxManagerSingleton::AddBoxToRenderList(String a_sInstanceName)
 //Pass in index of the box 
 bool BoundingBoxManagerSingleton::testSATOBB(int firstMat, int secondMat)
 {
-	//C = centerpoint * vector4(1, 0, 0, 1)
+	//Calculating the center points for both boxes
 	vector3 c1 = vector3(m_lMatrix[firstMat] * vector4(m_lBox[firstMat]->GetCentroid(), 1.0f));
 	vector3 c2 = vector3(m_lMatrix[secondMat] * vector4(m_lBox[secondMat]->GetCentroid(), 1.0f));
 
+	//Getting the x, y, and z values for the first matrix and storing them in another vector3 
 	vector3 u1X = vector3(m_lMatrix[firstMat] * vector4(1, 0, 0, 0));
 	vector3 u1Y = vector3(m_lMatrix[firstMat] * vector4(0, 1, 0, 0));
 	vector3 u1Z = vector3(m_lMatrix[firstMat] * vector4(0, 0, 1, 0));
 	vector3 u1[3] = {u1X, u1Y, u1Z};
 
-	//J Matrix
+	//Getting the x, y, and z values for the second matrix and storing them in another vector3 
 	vector3 u2X = vector3(m_lMatrix[secondMat] * vector4(1, 0, 0, 0));
 	vector3 u2Y = vector3(m_lMatrix[secondMat] * vector4(0, 1, 0, 0));
 	vector3 u2Z = vector3(m_lMatrix[secondMat] * vector4(0, 0, 1, 0));
 	vector3 u2[3] = {u2X, u2Y, u2Z};
 
-	//E vector = GetSize/2
+	//Getting the distance from the edges of both boxes to their respective center points
 	vector3 e1 = (m_lBox[firstMat]->GetSize())/2.0f;
 	vector3 e2 = (m_lBox[secondMat]->GetSize())/2.0f;
 
+	//Floats and matracies that will be used in the coming equasion
 	float distance1;
 	float distance2;
 	matrix4 RMat;
 	matrix4 AbsR;
 
+	//Calculating a matrix for the two boxes' global corrdinates
 	for(int i = 0; i < 3; i++)
 	{
 		for(int j = 0; j < 3; j++)
@@ -157,9 +160,11 @@ bool BoundingBoxManagerSingleton::testSATOBB(int firstMat, int secondMat)
 		}
 	}
 
+	//Calculating a translation vector and bringing them into the global 
 	vector3 t = c2 - c1;
 	t = vector3(glm::dot(t, u1[0]), glm::dot(t, u1[1]), glm::dot(t, u1[2]));
 
+	//Converting the above global matrix into the absolute value for that matrix, and storing it
 	for(int i = 0; i < 3; i++)
 	{
 		for(int j = 0; j < 3; j++)
@@ -168,6 +173,10 @@ bool BoundingBoxManagerSingleton::testSATOBB(int firstMat, int secondMat)
 		}
 	}
 
+	//TESTING THE INDIVIDUAL AXES. EVERY SINGLE AXIS WILL BE TESTED. SHOULD A SINGLE ONE PROVE TO BE NOT COLLIDING, THE FUNTION WILL RETURN A FLASE BOOLEAN AND CEASE.
+	//OTHERWISE, THE FUNCTION WILL RETURN TRUE AT THE VERY END, SIGNIFYING THAT EVERY PLANE IS COLLIDING AND THUSLY, THAT THERE IS A COLLISION
+
+	//L = A0, L = A1, L = A2
 	for(int i = 0; i < 3; i++)
 	{
 		distance1 = e1[i];
@@ -179,6 +188,7 @@ bool BoundingBoxManagerSingleton::testSATOBB(int firstMat, int secondMat)
 		}
 	}
 
+	//L = B0, L = B1, L = B2
 	for(int i = 0; i < 3; i++)
 	{
 		distance1 = e1[0] * AbsR[i][0] + e1[1] * AbsR[i][1] + e1[2] * AbsR[i][2];
@@ -273,13 +283,11 @@ void BoundingBoxManagerSingleton::CalculateCollision(void)
 	{
 		for(int j = i + 1; j < m_nBoxs; j++)
 		{
+			//Replacing the previous AABB collision testing with the new SAT function.
 			if(testSATOBB(i,j) == true)
 			{
 				m_lColor[i] = m_lColor[j] = MERED; //We make the Boxes red
-			}
-			
-
-			
+			}			
 		}
 	}
 }

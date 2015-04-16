@@ -1,0 +1,5 @@
+Jordan earned a 10/10.
+
+He attended all of the meetings.
+He worked on figuring out the concepts of the SAT. He also worked on implementing the actual collision detection for the SAT function. Overall, he also worked on all 
+aspects of the project as well.
